@@ -29,5 +29,6 @@ export default function ToDoList(props: {todoInput: string}) {
                 <ToDoItem key={item.id} todoInput={item} onRemove={onRemove}/>
             ))}           
         </div>
+        
     )
 }
