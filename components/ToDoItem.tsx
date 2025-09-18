@@ -1,10 +1,19 @@
 import { TrashIcon } from "@heroicons/react/16/solid";
-import { ToDo } from "./ToDoList";
+import type { ToDo } from "@/types/todo";
 
-export default function ToDoItem(props:{todoInput: ToDo, onRemove: (id: string) => void}) {
-    return (
-        <div id={props.todoInput.id} className="flex justify-between items-center bg-emerald-500 p-2 rounded-lg mb-4">
-            <label className="mr-4">{props.todoInput.text}</label> <TrashIcon className="w-4" onClick={() => props.onRemove(props.todoInput.id)}/>
-        </div>
-    )
+interface ToDoItemProps {
+  todo: ToDo;
+  onRemove: (id: string) => void;
+}
+
+export default function ToDoItem({ todo, onRemove }: ToDoItemProps) {
+  return (
+    <div
+      id={todo.id}
+      className="flex justify-between items-center bg-emerald-500 p-2 rounded-lg mb-4"
+    >
+      <label className="mr-4">{todo.text}</label>
+      <TrashIcon className="w-4 cursor-pointer" onClick={() => onRemove(todo.id)} />
+    </div>
+  );
 }
