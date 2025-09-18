@@ -1,34 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
 import ToDoItem from "./ToDoItem";
-import { v4 as uuidv4 } from "uuid";
-export interface ToDo {
-    id: string;
-    text: string;
-  }
+import type { ToDo } from "@/types/todo";
 
-export default function ToDoList(props: {todoInput: string}) {
-    const [toDoItems, setToDoItems] = useState<ToDo[]>([])
+interface ToDoListProps {
+  items: ToDo[];
+  onRemove: (id: string) => void;
+}
 
-    const onRemove = (idItem: string) => {
-        setToDoItems((prevItems) => prevItems.filter((item) => item.id !== idItem));
-    }
-
-    useEffect(() => {
-        if(props.todoInput) {
-            const newToDo = {
-                id: uuidv4(),
-                text: props.todoInput,
-            };
-            setToDoItems((prevItems) => [...prevItems, newToDo]);
-        }
-    }, [props.todoInput]);
-    return (
-        <div>
-            {toDoItems.map((item) => (
-                <ToDoItem key={item.id} todoInput={item} onRemove={onRemove}/>
-            ))}           
-        </div>
-        
-    )
+export default function ToDoList({ items, onRemove }: ToDoListProps) {
+  return (
+    <div>
+      {items.map((item) => (
+        <ToDoItem key={item.id} todo={item} onRemove={onRemove} />
+      ))}
+    </div>
+  );
 }

@@ -1,18 +1,42 @@
 "use client";
 import ToDoList from "@/components/ToDoList";
-import { useState } from "react";
-
-const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>, text: string, setItem: (item: string) => void, setText: (text: string) => void) => {
-  if (e.key === "Enter") {
-    setItem(text);
-    setText("");
-  }
-};
-
+import { useCallback, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import type { ToDo } from "@/types/todo";
 
 export default function Home() {
   const [text, setText] = useState<string>("");
-  const [item, setItem] = useState<string>("");
+  const [items, setItems] = useState<ToDo[]>([]);
+
+  const handleAddItem = useCallback((value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return;
+    }
+
+    setItems((prevItems) => [
+      ...prevItems,
+      {
+        id: uuidv4(),
+        text: trimmed,
+      },
+    ]);
+    setText("");
+  }, []);
+
+  const handleEnterKey = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleAddItem(text);
+      }
+    },
+    [handleAddItem, text],
+  );
+
+  const handleRemove = useCallback((id: string) => {
+    setItems((prevItems) => prevItems.filter((todo) => todo.id !== id));
+  }, []);
 
   return (
     <div className="flex justify-center items-center flex-col">
@@ -27,20 +51,18 @@ export default function Home() {
           placeholder="Ask a task"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => handleEnterKey(e, text, setItem, setText)}
+          onKeyDown={handleEnterKey}
         />
         <button
           className="w-full sm:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2 sm:mt-0"
-          onClick={() => {
-            setItem(text);
-            setText("");
-          }}
+          onClick={() => handleAddItem(text)}
+          type="button"
         >
           Add
         </button>
       </div>
       <div>
-        <ToDoList todoInput={item} />
+        <ToDoList items={items} onRemove={handleRemove} />
       </div>
     </div>
   );
